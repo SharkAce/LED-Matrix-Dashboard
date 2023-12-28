@@ -12,6 +12,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <ctime>
 
 volatile bool interrupt_received = false;
 static void InterruptHandler(int signo) {
@@ -39,10 +40,22 @@ int main(int argc, char *argv[]){
 	signal(SIGTERM, InterruptHandler);
 	signal(SIGINT, InterruptHandler);
 	while(!interrupt_received){
+    // Get the current time
+    std::time_t currentTime = std::time(nullptr);
+    std::tm* localTime = std::localtime(&currentTime);
+
+    // Format date string: {Weekday} - {Year}/{Month}/{Day}
+    char dateString[50];
+    std::strftime(dateString, sizeof(dateString), "%A - %Y/%m/%d", localTime);
+
+    // Format time string: {Hour}:{Minute}:{Second}
+    char timeString[20];
+    std::strftime(timeString, sizeof(timeString), "%H:%M:%S", localTime);
+
 		//canvas->Fill(0,0,255);
 		rgb_matrix::DrawText(canvas, font,
                            0, 10 + font.baseline(),
-                           color, NULL, "Hello World",
+                           color, NULL, dateString,
                            1);
 		usleep(1000);
 	}
