@@ -24,12 +24,19 @@ using rgb_matrix::Canvas;
 
 int main(int argc, char *argv[]){
 	RGBMatrix::Options defaults;
+		// My defaults change yours accordingly
 	  defaults.hardware_mapping = "regular";
+		defaults.led_rgb_sequence = "RBG";
 	  defaults.rows = 32;
 	  defaults.cols = 64;
 	  defaults.chain_length = 1;
 	  defaults.parallel = 1;
 	  defaults.show_refresh_rate = true;
+		defaults.brightness = 50;
+		defaults.disable_hardware_pulsing = true;
+		defaults.limit_refresh_rate_hz = 10;
+
+	// Loading font
 	rgb_matrix::Font font;
 	font.LoadFont("./fonts/4x6.bdf");
 	rgb_matrix::Font *outline_font = font.CreateOutlineFont();
