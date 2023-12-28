@@ -66,7 +66,7 @@ int main(int argc, char *argv[]){
 	defaults.cols = 64;
 	defaults.chain_length = 1;
 	defaults.parallel = 1;
-	defaults.show_refresh_rate = true;
+	defaults.show_refresh_rate = false;
 	defaults.brightness = 80;
 	defaults.disable_hardware_pulsing = true;
 
@@ -101,8 +101,9 @@ int main(int argc, char *argv[]){
 		std::strftime(timeString, sizeof(timeString), "%H:%M:%S", localTime);
 		std::strftime(weekdayString, sizeof(weekdayString), "%A", localTime);
 
-		int lastTimeDigit = static_cast<int>(timeString[7]);
-		if (lastTimeDigit % 10 < 5) {
+		char lastTimeDigit_char = static_cast<char>(timeString[strlen(timeString)-1]);
+		int lastTimeDigit_int = lastTimeDigit_char - '0';
+		if (lastTimeDigit_int < 5) {
 			timeString[7] = '0';
 		} else {
 			timeString[7] = '5';
