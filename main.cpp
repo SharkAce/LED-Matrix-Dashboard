@@ -84,13 +84,15 @@ int main(int argc, char *argv[]){
 
 	signal(SIGTERM, InterruptHandler);
 	signal(SIGINT, InterruptHandler);
+
 	char dateString[50];
 	char timeString[10];
 	char weekdayString[20];
 	std::string tempString;
 	int timeStep = 0;
 	while(!interrupt_received){
-		if (timeStep % 600 == 0){ 
+		// 120 * 5 sec = 10 min = 144/day < 250 max calls per day
+		if (timeStep % 120 == 0){ 
 			tempString = getWeatherInfo();
 		}
 	
@@ -101,6 +103,7 @@ int main(int argc, char *argv[]){
 		std::strftime(timeString, sizeof(timeString), "%H:%M:%S", localTime);
 		std::strftime(weekdayString, sizeof(weekdayString), "%A", localTime);
 
+		// Round last digit to 5
 		char lastTimeDigit_char = static_cast<char>(timeString[strlen(timeString)-1]);
 		int lastTimeDigit_int = lastTimeDigit_char - '0';
 		if (lastTimeDigit_int < 5) {
@@ -114,7 +117,8 @@ int main(int argc, char *argv[]){
 		rgb_matrix::DrawText(canvas, font1,0, 7 + font1.baseline(),color1, NULL, dateString,0);
 		rgb_matrix::DrawText(canvas, font1,0, 14 + font1.baseline(),color1, NULL, timeString,0);
 		rgb_matrix::DrawText(canvas, font1,40, 0 + font1.baseline(),color2, NULL, tempString.c_str(),0);
-		usleep(5000000);
+		int microsecond = 1000000;
+		usleep(5 * microsecond);
 		timeStep ++;
 	}
 	canvas->Clear();
