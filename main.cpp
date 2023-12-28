@@ -17,40 +17,36 @@
 #include <curl/curl.h>
 
 size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* output) {
-    size_t total_size = size * nmemb;
-    output->append(static_cast<char*>(contents), total_size);
-    return total_size;
+	size_t total_size = size * nmemb;
+	output->append(static_cast<char*>(contents), total_size);
+	return total_size;
 }
 
 std::string getWeatherInfo() {
-    // Initialize cURL
-    CURL* curl;
-    CURLcode res;
+	// Initialize cURL
+	CURL* curl;
+	CURLcode res;
 
-    curl_global_init(CURL_GLOBAL_DEFAULT);
-    curl = curl_easy_init();
+	curl_global_init(CURL_GLOBAL_DEFAULT);
+	curl = curl_easy_init();
 
-    if (curl) {
-        std::string url = "https://wttr.in/montreal?format=\%t";
+	std::string url = "https://wttr.in/montreal?format=\%t";
 
-        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
 
-        std::string response;
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
-        res = curl_easy_perform(curl);
-        curl_easy_cleanup(curl);
-        curl_global_cleanup();
+	std::string response;
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+	res = curl_easy_perform(curl);
+	curl_easy_cleanup(curl);
+	curl_global_cleanup();
 
-        return response;
-    } else {
-        std::cerr << "Error initializing cURL." << std::endl;
-        return "";
-    }
+	return response;
 }
+
 volatile bool interrupt_received = false;
 static void InterruptHandler(int signo) {
-  interrupt_received = true;
+	interrupt_received = true;
 }
 
 using rgb_matrix::RGBMatrix;
@@ -70,30 +66,27 @@ int main(int argc, char *argv[]){
 	defaults.brightness = 80;
 	defaults.disable_hardware_pulsing = true;
 
-	// Loading font
 	rgb_matrix::Font font1;
 	font1.LoadFont("./fonts/4x6.bdf");
-
-	rgb_matrix::Font font2;
-	font2.LoadFont("./fonts/5x8.bdf");
 
 	rgb_matrix::Color color1(64,0,128);
 	rgb_matrix::Color color2(0,128,128);
 
 	RGBMatrix *canvas = RGBMatrix::CreateFromFlags(&argc, &argv, &defaults);
 
+	char timeString[10];
+	char dateString[20];
+	char weekdayString[20];
+	std::string temperatureString;
+	int timeStep = 0;
+
 	signal(SIGTERM, InterruptHandler);
 	signal(SIGINT, InterruptHandler);
 
-	char dateString[50];
-	char timeString[10];
-	char weekdayString[20];
-	std::string tempString;
-	int timeStep = 0;
 	while(!interrupt_received){
 		// 120 * 5 sec = 10 min = 144/day < 250 max calls per day
 		if (timeStep % 120 == 0){ 
-			tempString = getWeatherInfo();
+			//temperatureString = getWeatherInfo();
 		}
 	
 		std::time_t currentTime = std::time(nullptr);
@@ -104,19 +97,14 @@ int main(int argc, char *argv[]){
 		std::strftime(weekdayString, sizeof(weekdayString), "%A", localTime);
 
 		// Round last digit to 5
-		char lastTimeDigit_char = static_cast<char>(timeString[strlen(timeString)-1]);
-		int lastTimeDigit_int = lastTimeDigit_char - '0';
-		if (lastTimeDigit_int < 5) {
-			timeString[7] = '0';
-		} else {
-			timeString[7] = '5';
-		}
+		int lastTimeDigit = timeString[strlen(timeString)-1] - '0';
+		timeString[7] = lastTimeDigit < 5 ? '0' : '5';
 
 		canvas->Clear();
 		rgb_matrix::DrawText(canvas, font1,0, 0 + font1.baseline(),color1, NULL, weekdayString,0);
 		rgb_matrix::DrawText(canvas, font1,0, 7 + font1.baseline(),color1, NULL, dateString,0);
 		rgb_matrix::DrawText(canvas, font1,0, 14 + font1.baseline(),color1, NULL, timeString,0);
-		rgb_matrix::DrawText(canvas, font1,40, 0 + font1.baseline(),color2, NULL, tempString.c_str(),0);
+		rgb_matrix::DrawText(canvas, font1,40, 0 + font1.baseline(),color2, NULL, temperatureString.c_str(),0);
 		int microsecond = 1000000;
 		usleep(5 * microsecond);
 		timeStep ++;
@@ -125,4 +113,3 @@ int main(int argc, char *argv[]){
 	delete canvas;
 	return 0;
 }
-
