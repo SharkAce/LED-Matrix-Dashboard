@@ -86,7 +86,7 @@ int main(int argc, char *argv[]){
 	while(!interrupt_received){
 		// 120 * 5 sec = 10 min = 144/day < 250 max calls per day
 		if (timeStep % 120 == 0){ 
-			//temperatureString = getWeatherInfo();
+			temperatureString = getWeatherInfo();
 		}
 	
 		std::time_t currentTime = std::time(nullptr);
