@@ -1,5 +1,12 @@
-LIB=lib/librgbmatrix.a
-OPT=-lcurl
+RGB_LIB_DISTRIBUTION=matrix
+RGB_INCDIR=$(RGB_LIB_DISTRIBUTION)/include
+RGB_LIBDIR=$(RGB_LIB_DISTRIBUTION)/lib
+RGB_LIBRARY_NAME=rgbmatrix
+RGB_LIBRARY=$(RGB_LIBDIR)/lib$(RGB_LIBRARY_NAME).a
+FLAGS+=-L$(RGB_LIBDIR) -l$(RGB_LIBRARY_NAME) -lrt -lm -lpthread -O3 -lcurl
 
-bin: main.cpp
-	$(CXX) $^ -o $@ $(LIB) $(OPT)
+dashboard: main.cpp $(RGB_LIBRARY)
+	 $(CXX) $(CXXFLAGS) main.cpp -o $@ $(FLAGS)
+
+$(RGB_LIBRARY):
+	$(MAKE) -C $(RGB_LIBDIR)

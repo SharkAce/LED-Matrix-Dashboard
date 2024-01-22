@@ -1,5 +1,5 @@
-#include "include/led-matrix.h"
-#include "include/graphics.h"
+#include "matrix/include/led-matrix.h"
+#include "matrix/include/graphics.h"
 #include <getopt.h>
 #include <signal.h>
 #include <stdio.h>
