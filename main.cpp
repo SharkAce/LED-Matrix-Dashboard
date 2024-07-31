@@ -18,35 +18,35 @@
 #include <curl/curl.h>
 
 static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
-    ((std::string*)userp)->append((char*)contents, size * nmemb);
-    return size * nmemb;
+	((std::string*)userp)->append((char*)contents, size * nmemb);
+	return size * nmemb;
 }
 
 char* fetchUrlData(const char* url) {
-    CURL* curl;
-    CURLcode res;
-    std::string readBuffer;
+	CURL* curl;
+	CURLcode res;
+	std::string readBuffer;
 
-    curl = curl_easy_init();
-    if(curl) {
-        curl_easy_setopt(curl, CURLOPT_URL, url); // Set the URL
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback); // Set callback function
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer); // Pass the string to write data to
-        res = curl_easy_perform(curl); // Perform the request
+	curl = curl_easy_init();
+	if(curl) {
+		curl_easy_setopt(curl, CURLOPT_URL, url); // Set the URL
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback); // Set callback function
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer); // Pass the string to write data to
+		res = curl_easy_perform(curl); // Perform the request
 
-        if(res != CURLE_OK) {
-            std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
-            curl_easy_cleanup(curl);
-            return nullptr;
-        }
-        curl_easy_cleanup(curl);
-    }
+		if(res != CURLE_OK) {
+			std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
+			curl_easy_cleanup(curl);
+			return nullptr;
+		}
+		curl_easy_cleanup(curl);
+	}
 
-    // Allocate memory for the result and copy the string content
-    char* result = new char[readBuffer.size() + 1];
-    strcpy(result, readBuffer.c_str());
+	// Allocate memory for the result and copy the string content
+	char* result = new char[readBuffer.size() + 1];
+	strcpy(result, readBuffer.c_str());
 
-    return result;
+	return result;
 }
 
 volatile bool interrupt_received = false;
@@ -107,7 +107,7 @@ int main(int argc, char *argv[]){
 			feelString = fetchUrlData(wttrFeelUrl);
 			pubIpString = fetchUrlData(publicIpUrl);
 		}
-	
+
 		std::time_t currentTime = std::time(nullptr);
 		std::tm* localTime = std::localtime(&currentTime);
 
