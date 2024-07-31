@@ -1,21 +1,10 @@
 #include "matrix/include/led-matrix.h"
 #include "matrix/include/graphics.h"
-#include <getopt.h>
+#include <curl/curl.h>
 #include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <unistd.h>
-#include <math.h>
-
-#include <vector>
 #include <string>
-#include <cstring>
 #include <iostream>
 #include <ctime>
-#include <cstdlib>
-#include <curl/curl.h>
 
 static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
 	((std::string*)userp)->append((char*)contents, size * nmemb);
@@ -113,7 +102,7 @@ int main(int argc, char *argv[]){
 		std::strftime(weekdayString, sizeof(weekdayString), "%A", localTime);
 
 		// Round last digit to 5
-		int lastTimeDigit = timeString[strlen(timeString)-1] - '0';
+		int lastTimeDigit = timeString[7] - '0';
 		timeString[7] = lastTimeDigit < 5 ? '0' : '5';
 
 		canvas->Clear();
