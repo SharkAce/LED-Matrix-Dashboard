@@ -84,12 +84,9 @@ int main(int argc, char *argv[]){
 
 	RGBMatrix *canvas = RGBMatrix::CreateFromFlags(&argc, &argv, &defaults);
 
-	std::string timeString;
-	std::string dateString;
-	std::string weekdayString;
-	timeString.resize(9);  // Enough space for "HH:MM:SS"
-	dateString.resize(11); // Enough space for "YYYY/MM/DD"
-	weekdayString.resize(10); // Enough space for all weekday names
+	char dateString[11]; // Enough space for "YYYY/MM/DD\0"
+	char timeString[9];  // Enough space for "HH:MM:SS\0"
+	char weekdayString[10]; // Enough space for all weekday names
 
 	std::string addrString;
 	std::string tempString;
@@ -111,18 +108,18 @@ int main(int argc, char *argv[]){
 		std::time_t currentTime = std::time(nullptr);
 		std::tm* localTime = std::localtime(&currentTime);
 
-		std::strftime(dateString.data(), dateString.size(), "%Y/%m/%d", localTime);
-		std::strftime(timeString.data(), timeString.size(), "%H:%M:%S", localTime);
-		std::strftime(weekdayString.data(), weekdayString.size(), "%A", localTime);
+		std::strftime(dateString, sizeof(dateString), "%Y/%m/%d", localTime);
+		std::strftime(timeString, sizeof(timeString), "%H:%M:%S", localTime);
+		std::strftime(weekdayString, sizeof(weekdayString), "%A", localTime);
 
 		// Round last digit to 5
-		int lastTimeDigit = timeString.back() - '0';
+		int lastTimeDigit = timeString[strlen(timeString)-1] - '0';
 		timeString[7] = lastTimeDigit < 5 ? '0' : '5';
 
 		canvas->Clear();
-		rgb_matrix::DrawText(canvas, font1,2, 2 + font1.baseline(),color1, NULL, weekdayString.c_str(), 0);
-		rgb_matrix::DrawText(canvas, font1,2, 9 + font1.baseline(),color1, NULL, dateString.c_str(), 0);
-		rgb_matrix::DrawText(canvas, font1,2, 16 + font1.baseline(),color1, NULL, timeString.c_str(), 0);
+		rgb_matrix::DrawText(canvas, font1,2, 2 + font1.baseline(),color1, NULL, weekdayString, 0);
+		rgb_matrix::DrawText(canvas, font1,2, 9 + font1.baseline(),color1, NULL, dateString, 0);
+		rgb_matrix::DrawText(canvas, font1,2, 16 + font1.baseline(),color1, NULL, timeString, 0);
 		rgb_matrix::DrawText(canvas, font1,2, 23 + font1.baseline(),color3, NULL, pubIpString.c_str(), 0);
 		rgb_matrix::DrawText(canvas, font1,65-((tempString.size()-1)*4), 0 + font1.baseline(),color2, NULL, tempString.c_str(), 0);
 		rgb_matrix::DrawText(canvas, font1,65-((feelString.size()-1)*4), 6 + font1.baseline(),color4, NULL, feelString.c_str(), 0);
