@@ -55,6 +55,8 @@ static void InterruptHandler(int signo) {
 
 using rgb_matrix::RGBMatrix;
 using rgb_matrix::Canvas;
+using rgb_matrix::Color;
+using rgb_matrix::Font;
 
 constexpr const int microsecond = 1000000;
 constexpr const char* wttrTempUrl = "https://wttr.in/montreal?format=\%t";
@@ -73,11 +75,11 @@ int main(int argc, char *argv[]){
 	defaults.brightness = 80;
 	defaults.disable_hardware_pulsing = true;
 
-	rgb_matrix::Font font1;
+	Font font1;
 	font1.LoadFont("./fonts/4x6.bdf");
 
-	rgb_matrix::Color color1(64,0,128);
-	rgb_matrix::Color color2(0,128,128);
+	Color color1(64,0,128);
+	Color color2(0,128,128);
 
 	RGBMatrix *canvas = RGBMatrix::CreateFromFlags(&argc, &argv, &defaults);
 
