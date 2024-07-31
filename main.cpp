@@ -22,7 +22,7 @@ static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* use
 	return size * nmemb;
 }
 
-char* fetchUrlData(const char* url) {
+std::string fetchUrlData(const char* url) {
 	CURL* curl;
 	CURLcode res;
 	std::string readBuffer;
@@ -37,16 +37,12 @@ char* fetchUrlData(const char* url) {
 		if(res != CURLE_OK) {
 			std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
 			curl_easy_cleanup(curl);
-			return nullptr;
+			return "";
 		}
 		curl_easy_cleanup(curl);
 	}
 
-	// Allocate memory for the result and copy the string content
-	char* result = new char[readBuffer.size() + 1];
-	strcpy(result, readBuffer.c_str());
-
-	return result;
+	return readBuffer;
 }
 
 volatile bool interrupt_received = false;
@@ -88,13 +84,17 @@ int main(int argc, char *argv[]){
 
 	RGBMatrix *canvas = RGBMatrix::CreateFromFlags(&argc, &argv, &defaults);
 
-	char* timeString;
-	char* dateString;
-	char* weekdayString;
-	char* addrString;
-	char* tempString;
-	char* feelString;
-	char* pubIpString;
+	std::string timeString;
+	std::string dateString;
+	std::string weekdayString;
+	timeString.resize(9);  // Enough space for "HH:MM:SS"
+	dateString.resize(11); // Enough space for "YYYY/MM/DD"
+	weekdayString.resize(10); // Enough space for all weekday names
+
+	std::string addrString;
+	std::string tempString;
+	std::string feelString;
+	std::string pubIpString;
 
 	int timeStep = 0;
 	signal(SIGTERM, InterruptHandler);
@@ -111,21 +111,21 @@ int main(int argc, char *argv[]){
 		std::time_t currentTime = std::time(nullptr);
 		std::tm* localTime = std::localtime(&currentTime);
 
-		std::strftime(dateString, sizeof(dateString), "%Y/%m/%d", localTime);
-		std::strftime(timeString, sizeof(timeString), "%H:%M:%S", localTime);
-		std::strftime(weekdayString, sizeof(weekdayString), "%A", localTime);
+		std::strftime(dateString.data(), dateString.size(), "%Y/%m/%d", localTime);
+		std::strftime(timeString.data(), timeString.size(), "%H:%M:%S", localTime);
+		std::strftime(weekdayString.data(), weekdayString.size(), "%A", localTime);
 
 		// Round last digit to 5
-		int lastTimeDigit = timeString[strlen(timeString)-1] - '0';
+		int lastTimeDigit = timeString.back() - '0';
 		timeString[7] = lastTimeDigit < 5 ? '0' : '5';
 
 		canvas->Clear();
-		rgb_matrix::DrawText(canvas, font1,2, 2 + font1.baseline(),color1, NULL, weekdayString,0);
-		rgb_matrix::DrawText(canvas, font1,2, 9 + font1.baseline(),color1, NULL, dateString,0);
-		rgb_matrix::DrawText(canvas, font1,2, 16 + font1.baseline(),color1, NULL, timeString,0);
-		rgb_matrix::DrawText(canvas, font1,2, 23 + font1.baseline(),color3, NULL, pubIpString,0);
-		rgb_matrix::DrawText(canvas, font1,65-((strlen(tempString)-1)*4), 0 + font1.baseline(),color2, NULL, tempString, 0);
-		rgb_matrix::DrawText(canvas, font1,65-((strlen(feelString)-1)*4), 6 + font1.baseline(),color4, NULL, feelString, 0);
+		rgb_matrix::DrawText(canvas, font1,2, 2 + font1.baseline(),color1, NULL, weekdayString.c_str(), 0);
+		rgb_matrix::DrawText(canvas, font1,2, 9 + font1.baseline(),color1, NULL, dateString.c_str(), 0);
+		rgb_matrix::DrawText(canvas, font1,2, 16 + font1.baseline(),color1, NULL, timeString.c_str(), 0);
+		rgb_matrix::DrawText(canvas, font1,2, 23 + font1.baseline(),color3, NULL, pubIpString.c_str(), 0);
+		rgb_matrix::DrawText(canvas, font1,65-((tempString.size()-1)*4), 0 + font1.baseline(),color2, NULL, tempString.c_str(), 0);
+		rgb_matrix::DrawText(canvas, font1,65-((feelString.size()-1)*4), 6 + font1.baseline(),color4, NULL, feelString.c_str(), 0);
 		usleep(5 * microsecond);
 		timeStep ++;
 	}
