@@ -120,11 +120,10 @@ int main(int argc, char *argv[]){
 		timeString[7] = lastTimeDigit < 5 ? '0' : '5';
 
 		canvas->Clear();
-		rgb_matrix::DrawText(canvas, font1,0, 0 + font1.baseline(),color1, NULL, weekdayString,0);
-		rgb_matrix::DrawText(canvas, font1,0, 7 + font1.baseline(),color1, NULL, dateString,0);
-		rgb_matrix::DrawText(canvas, font1,0, 14 + font1.baseline(),color1, NULL, timeString,0);
+		rgb_matrix::DrawText(canvas, font1,2, 2 + font1.baseline(),color1, NULL, weekdayString,0);
+		rgb_matrix::DrawText(canvas, font1,2, 9 + font1.baseline(),color1, NULL, dateString,0);
+		rgb_matrix::DrawText(canvas, font1,2, 16 + font1.baseline(),color1, NULL, timeString,0);
 		rgb_matrix::DrawText(canvas, font1,2, 23 + font1.baseline(),color3, NULL, pubIpString,0);
-		rgb_matrix::DrawText(canvas, font1,40, 0 + font1.baseline(),color2, NULL, tempString,0);
 		rgb_matrix::DrawText(canvas, font1,65-((strlen(tempString)-1)*4), 0 + font1.baseline(),color2, NULL, tempString, 0);
 		rgb_matrix::DrawText(canvas, font1,65-((strlen(feelString)-1)*4), 6 + font1.baseline(),color4, NULL, feelString, 0);
 		usleep(5 * microsecond);
