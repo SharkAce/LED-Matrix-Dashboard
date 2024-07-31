@@ -75,8 +75,8 @@ int main(int argc, char *argv[]){
 	defaults.chain_length = 1;
 	defaults.parallel = 1;
 	defaults.show_refresh_rate = false;
-	defaults.brightness = 80;
-	defaults.disable_hardware_pulsing = true;
+	defaults.brightness = 50;
+	defaults.disable_hardware_pulsing = false;
 
 	Font font1;
 	font1.LoadFont("./fonts/4x6.bdf");
