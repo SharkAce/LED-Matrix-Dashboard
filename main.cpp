@@ -2,6 +2,7 @@
 #include "matrix/include/graphics.h"
 #include <curl/curl.h>
 #include <signal.h>
+#include <unistd.h>
 #include <string>
 #include <iostream>
 #include <ctime>
