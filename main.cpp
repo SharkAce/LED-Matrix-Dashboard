@@ -16,32 +16,36 @@
 #include <cstdlib>
 #include <curl/curl.h>
 
-size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* output) {
-	size_t total_size = size * nmemb;
-	output->append(static_cast<char*>(contents), total_size);
-	return total_size;
+static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
+    ((std::string*)userp)->append((char*)contents, size * nmemb);
+    return size * nmemb;
 }
 
-std::string getWeatherInfo() {
-	// Initialize cURL
-	CURL* curl;
-	CURLcode res;
+char* fetchUrlData(const char* url) {
+    CURL* curl;
+    CURLcode res;
+    std::string readBuffer;
 
-	curl_global_init(CURL_GLOBAL_DEFAULT);
-	curl = curl_easy_init();
+    curl = curl_easy_init();
+    if(curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, url); // Set the URL
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback); // Set callback function
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer); // Pass the string to write data to
+        res = curl_easy_perform(curl); // Perform the request
 
-	std::string url = "https://wttr.in/montreal?format=\%t";
+        if(res != CURLE_OK) {
+            std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
+            curl_easy_cleanup(curl);
+            return nullptr;
+        }
+        curl_easy_cleanup(curl);
+    }
 
-	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+    // Allocate memory for the result and copy the string content
+    char* result = new char[readBuffer.size() + 1];
+    strcpy(result, readBuffer.c_str());
 
-	std::string response;
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
-	res = curl_easy_perform(curl);
-	curl_easy_cleanup(curl);
-	curl_global_cleanup();
-
-	return response;
+    return result;
 }
 
 volatile bool interrupt_received = false;
@@ -51,6 +55,9 @@ static void InterruptHandler(int signo) {
 
 using rgb_matrix::RGBMatrix;
 using rgb_matrix::Canvas;
+
+constexpr const int microsecond = 1000000;
+constexpr const char* wttrTempUrl = "https://wttr.in/montreal?format=\%t";
 
 int main(int argc, char *argv[]){
 	RGBMatrix::Options defaults;
@@ -77,7 +84,7 @@ int main(int argc, char *argv[]){
 	char timeString[10];
 	char dateString[20];
 	char weekdayString[20];
-	std::string temperatureString;
+	char* tempString;
 	int timeStep = 0;
 
 	signal(SIGTERM, InterruptHandler);
@@ -86,7 +93,7 @@ int main(int argc, char *argv[]){
 	while(!interrupt_received){
 		// 120 * 5 sec = 10 min = 144/day < 250 max calls per day
 		if (timeStep % 120 == 0){ 
-			temperatureString = getWeatherInfo();
+			tempString = fetchUrlData(wttrTempUrl);
 		}
 	
 		std::time_t currentTime = std::time(nullptr);
@@ -104,8 +111,7 @@ int main(int argc, char *argv[]){
 		rgb_matrix::DrawText(canvas, font1,0, 0 + font1.baseline(),color1, NULL, weekdayString,0);
 		rgb_matrix::DrawText(canvas, font1,0, 7 + font1.baseline(),color1, NULL, dateString,0);
 		rgb_matrix::DrawText(canvas, font1,0, 14 + font1.baseline(),color1, NULL, timeString,0);
-		rgb_matrix::DrawText(canvas, font1,40, 0 + font1.baseline(),color2, NULL, temperatureString.c_str(),0);
-		int microsecond = 1000000;
+		rgb_matrix::DrawText(canvas, font1,40, 0 + font1.baseline(),color2, NULL, tempString,0);
 		usleep(5 * microsecond);
 		timeStep ++;
 	}
