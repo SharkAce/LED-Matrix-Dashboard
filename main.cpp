@@ -11,6 +11,7 @@
 
 #include <vector>
 #include <string>
+#include <cstring>
 #include <iostream>
 #include <ctime>
 #include <cstdlib>
@@ -60,6 +61,8 @@ using rgb_matrix::Font;
 
 constexpr const int microsecond = 1000000;
 constexpr const char* wttrTempUrl = "https://wttr.in/montreal?format=\%t";
+constexpr const char* wttrFeelUrl = "https://wttr.in/montreal?format=\%f";
+constexpr const char* publicIpUrl = "https://ipinfo.io/ip";
 
 int main(int argc, char *argv[]){
 	RGBMatrix::Options defaults;
@@ -80,15 +83,20 @@ int main(int argc, char *argv[]){
 
 	Color color1(64,0,128);
 	Color color2(0,128,128);
+	Color color3(100,0,100);
+	Color color4(0,128,64);
 
 	RGBMatrix *canvas = RGBMatrix::CreateFromFlags(&argc, &argv, &defaults);
 
-	char timeString[10];
-	char dateString[20];
-	char weekdayString[20];
+	char* timeString;
+	char* dateString;
+	char* weekdayString;
+	char* addrString;
 	char* tempString;
-	int timeStep = 0;
+	char* feelString;
+	char* pubIpString;
 
+	int timeStep = 0;
 	signal(SIGTERM, InterruptHandler);
 	signal(SIGINT, InterruptHandler);
 
@@ -96,6 +104,8 @@ int main(int argc, char *argv[]){
 		// 120 * 5 sec = 10 min = 144/day < 250 max calls per day
 		if (timeStep % 120 == 0){ 
 			tempString = fetchUrlData(wttrTempUrl);
+			feelString = fetchUrlData(wttrFeelUrl);
+			pubIpString = fetchUrlData(publicIpUrl);
 		}
 	
 		std::time_t currentTime = std::time(nullptr);
@@ -113,7 +123,10 @@ int main(int argc, char *argv[]){
 		rgb_matrix::DrawText(canvas, font1,0, 0 + font1.baseline(),color1, NULL, weekdayString,0);
 		rgb_matrix::DrawText(canvas, font1,0, 7 + font1.baseline(),color1, NULL, dateString,0);
 		rgb_matrix::DrawText(canvas, font1,0, 14 + font1.baseline(),color1, NULL, timeString,0);
+		rgb_matrix::DrawText(canvas, font1,2, 23 + font1.baseline(),color3, NULL, pubIpString,0);
 		rgb_matrix::DrawText(canvas, font1,40, 0 + font1.baseline(),color2, NULL, tempString,0);
+		rgb_matrix::DrawText(canvas, font1,65-((strlen(tempString)-1)*4), 0 + font1.baseline(),color2, NULL, tempString, 0);
+		rgb_matrix::DrawText(canvas, font1,65-((strlen(feelString)-1)*4), 6 + font1.baseline(),color4, NULL, feelString, 0);
 		usleep(5 * microsecond);
 		timeStep ++;
 	}
