@@ -6,6 +6,12 @@
 #include <string>
 #include <iostream>
 #include <ctime>
+#include <filesystem>
+
+std::string getExecutablePath() {
+	std::filesystem::path exePath = std::filesystem::canonical("/proc/self/exe");
+	return exePath.parent_path().string();
+}
 
 static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
 	((std::string*)userp)->append((char*)contents, size * nmemb);
@@ -64,8 +70,9 @@ int main(int argc, char *argv[]){
 	defaults.brightness = 50;
 	defaults.disable_hardware_pulsing = false;
 
-	Font font1;
-	font1.LoadFont("./fonts/4x6.bdf");
+	Font font;
+	std::string fontPath = getExecutablePath() + "/fonts/4x6.bdf";
+	font.LoadFont(fontPath.c_str());
 
 	Color color1(64,0,128);
 	Color color2(0,128,128);
@@ -107,12 +114,12 @@ int main(int argc, char *argv[]){
 		timeString[7] = lastTimeDigit < 5 ? '0' : '5';
 
 		canvas->Clear();
-		rgb_matrix::DrawText(canvas, font1,2, 2 + font1.baseline(),color1, NULL, weekdayString, 0);
-		rgb_matrix::DrawText(canvas, font1,2, 9 + font1.baseline(),color1, NULL, dateString, 0);
-		rgb_matrix::DrawText(canvas, font1,2, 16 + font1.baseline(),color1, NULL, timeString, 0);
-		rgb_matrix::DrawText(canvas, font1,2, 23 + font1.baseline(),color3, NULL, pubIpString.c_str(), 0);
-		rgb_matrix::DrawText(canvas, font1,65-((tempString.size()-1)*4), 0 + font1.baseline(),color2, NULL, tempString.c_str(), 0);
-		rgb_matrix::DrawText(canvas, font1,65-((feelString.size()-1)*4), 6 + font1.baseline(),color4, NULL, feelString.c_str(), 0);
+		rgb_matrix::DrawText(canvas, font,2, 2 + font.baseline(),color1, NULL, weekdayString, 0);
+		rgb_matrix::DrawText(canvas, font,2, 9 + font.baseline(),color1, NULL, dateString, 0);
+		rgb_matrix::DrawText(canvas, font,2, 16 + font.baseline(),color1, NULL, timeString, 0);
+		rgb_matrix::DrawText(canvas, font,2, 23 + font.baseline(),color3, NULL, pubIpString.c_str(), 0);
+		rgb_matrix::DrawText(canvas, font,65-((tempString.size()-1)*4), 0 + font.baseline(),color2, NULL, tempString.c_str(), 0);
+		rgb_matrix::DrawText(canvas, font,65-((feelString.size()-1)*4), 6 + font.baseline(),color4, NULL, feelString.c_str(), 0);
 		usleep(5 * microsecond);
 		timeStep ++;
 	}
