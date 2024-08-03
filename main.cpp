@@ -71,7 +71,7 @@ int main(int argc, char *argv[]){
 	defaults.disable_hardware_pulsing = false;
 
 	Font font;
-	std::string fontPath = getExecutablePath() + "/matrix/fonts/4x6.bdf";
+	std::string fontPath = getExecutablePath() + "/rpi-rgb-led-matrix/fonts/4x6.bdf";
 	font.LoadFont(fontPath.c_str());
 
 	Color color1(64,0,128);
