@@ -1,0 +1,11 @@
+[Unit]
+Description=LED Matrix Dashboard
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/usr/bin/matrix-dashboard
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
