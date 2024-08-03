@@ -49,5 +49,5 @@ uninstall:
 	systemctl stop $(SERVICE_NAME)
 	systemctl disable $(SERVICE_NAME)
 	rm -f $(EXEC_TARGET)
-	rm -f $(SERVICE_TARGET)
+	rm -f $(SERVICE_FILE_TARGET)
 	@echo Uninstall complete.
