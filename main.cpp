@@ -59,7 +59,7 @@ constexpr const char* publicIpUrl = "https://ipinfo.io/ip";
 int main(int argc, char *argv[]){
 	RGBMatrix::Options defaults;
 
-	// My defaults change yours accordingly
+	// My defaults change it accordingly
 	defaults.hardware_mapping = "regular";
 	defaults.led_rgb_sequence = "RBG";
 	defaults.rows = 32;
