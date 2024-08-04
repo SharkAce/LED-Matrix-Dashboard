@@ -1,10 +1,12 @@
 NAME=matrix-dashboard
 
+BUILD_DIR = build
+SRC_DIR := src
 MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 CURRENT_DIR := $(patsubst %/,%,$(dir $(MKFILE_PATH)))
 
-EXEC_REL=$(NAME)
-EXEC_ABS=$(CURRENT_DIR)/$(NAME)
+EXEC_REL=$(BUILD_DIR)/$(NAME)
+EXEC_ABS=$(CURRENT_DIR)/$(BUILD_DIR)/$(NAME)
 EXEC_TARGET=/usr/bin/$(NAME)
 
 SERVICE_DIR=systemd
@@ -17,14 +19,24 @@ RGB_INCDIR=$(RGB_LIB_DISTRIBUTION)/include
 RGB_LIBDIR=$(RGB_LIB_DISTRIBUTION)/lib
 RGB_LIBRARY_NAME=rgbmatrix
 RGB_LIBRARY=$(RGB_LIBDIR)/lib$(RGB_LIBRARY_NAME).a
-FLAGS+=-L$(RGB_LIBDIR) -l$(RGB_LIBRARY_NAME) -lrt -lm -lpthread -O3 -lcurl -std=c++17
 
-.PHONY: all install uninstall test
+CXXFLAGS += -I$(RGB_INCDIR) -O3 -std=c++17
+LDFLAGS += -L$(RGB_LIBDIR) -l$(RGB_LIBRARY_NAME) -lrt -lm -lpthread -lcurl
 
+SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
+OBJECTS = $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SOURCES))
+DEPENDS = $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.d,$(SOURCES))
+
+.PHONY: all install uninstall clean
 all: $(EXEC_REL)
 
-$(EXEC_REL): main.cpp $(RGB_LIBRARY)
-	 $(CXX) $(CXXFLAGS) main.cpp -o $@ $(FLAGS)
+$(EXEC_REL): $(OBJECTS) $(RGB_LIBRARY)
+	$(CXX) $(OBJECTS) -o $@ $(LDFLAGS)
+
+-include $(DEPENDS)
+
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
+	$(CXX) $(CXXFLAGS) -MMD -MP -c $< -o $@
 
 $(RGB_LIBRARY):
 	$(MAKE) -C $(RGB_LIBDIR)
@@ -51,3 +63,6 @@ uninstall:
 	rm -f $(EXEC_TARGET)
 	rm -f $(SERVICE_FILE_TARGET)
 	@echo Uninstall complete.
+
+clean:
+	rm -f $(OBJECTS) $(DEPENDS) $(EXEC_REL)

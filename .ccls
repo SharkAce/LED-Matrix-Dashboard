@@ -1,6 +1,11 @@
-clang
-%c -std=c11
-%cpp -std=c++2a
-%h %hpp --include=Global.h
--Iinc
--DMACRO
+%clang
+-I.
+-I./rpi-rgb-led-matrix/include
+-L./rpi-rgb-led-matrix/lib
+-lrgbmatrix
+-lrt
+-lm
+-lpthread
+-lcurl
+-std=c++17
+-O3
