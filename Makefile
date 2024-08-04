@@ -36,6 +36,7 @@ $(EXEC_REL): $(OBJECTS) $(RGB_LIBRARY)
 -include $(DEPENDS)
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
+	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -MMD -MP -c $< -o $@
 
 $(RGB_LIBRARY):
