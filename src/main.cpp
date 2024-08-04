@@ -8,9 +8,9 @@
 #include <ctime>
 #include <filesystem>
 
-std::string getExecutablePath() {
+std::string getProjectRoot() {
 	std::filesystem::path exePath = std::filesystem::canonical("/proc/self/exe");
-	return exePath.parent_path().string();
+	return exePath.parent_path().parent_path().string();
 }
 
 static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
@@ -71,7 +71,7 @@ int main(int argc, char *argv[]){
 	defaults.disable_hardware_pulsing = false;
 
 	Font font;
-	std::string fontPath = getExecutablePath() + "/rpi-rgb-led-matrix/fonts/4x6.bdf";
+	std::string fontPath = getProjectRoot().append("/rpi-rgb-led-matrix/fonts/4x6.bdf");
 	font.LoadFont(fontPath.c_str());
 
 	Color color1(64,0,128);
