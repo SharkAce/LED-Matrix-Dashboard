@@ -7,8 +7,9 @@ Block::Block(Block::Config&& config)
 	textProvider(std::move(config.textProvider)),
 	color(config.color),
 	interval(config.interval),
-	x(config.x),
-	y(config.y) {};
+	origin(config.origin),
+	relativeX(config.relativeX),
+	relativeY(config.relativeY) {};
 
 std::vector<Block> Block::createBlocksFromJson(const std::string& filename, rgb_matrix::Font& font) {
 	std::ifstream file(filename);
@@ -25,18 +26,31 @@ std::vector<Block> Block::createBlocksFromJson(const std::string& filename, rgb_
 		int b = item.at("color")[2].get<int>();
 		rgb_matrix::Color color(r, g, b);
 
-		int x = item.at("position").at("x").get<int>();
-		int y = item.at("position").at("y").get<int>() + font.baseline();
+		int relativeX = item.at("position").at("x").get<int>();
+		int relativeY = item.at("position").at("y").get<int>();
 
 		int interval = item.at("interval").get<int>();
+
+		Block::Origin origin = Block::Origin::TopLeft;
+		if (item.contains("origin")) {
+			std::string itemOrigin = item.at("origin").get<std::string>();
+			if (itemOrigin == "top-right") {
+				origin = Block::Origin::TopRight;
+			} else if (itemOrigin == "bottom-left") {
+				origin = Block::Origin::BottomLeft;
+			} else if (itemOrigin == "bottom-right") {
+				origin = Block::Origin::BottomRight;
+			}
+		}
 
 		Block::Config config = {
 			.textProvider = std::move(textProvider),
 			.font = font,
 			.color = color,
 			.interval = interval,
-			.x = x,
-			.y = y
+			.origin = origin,
+			.relativeX = relativeX,
+			.relativeY = relativeY
 		};
 
 		blocks.emplace_back(std::move(config));
@@ -45,10 +59,39 @@ std::vector<Block> Block::createBlocksFromJson(const std::string& filename, rgb_
 	return blocks;
 }
 
+void Block::setAbsolutePosition(const std::string& text) {
+	int textHeight = font.height(); 
+	int textWidth = 0;
+	for (char c : text) {
+		textWidth += font.CharacterWidth(c);
+	}
+
+	int newAbsoluteX = relativeX;
+	int newAbsoluteY = relativeY + font.baseline();
+
+	switch (origin) {
+		case Origin::TopLeft:
+			break;
+		case Origin::TopRight:
+			newAbsoluteX -= textWidth;
+			break;
+		case Origin::BottomLeft:
+			newAbsoluteY -= textHeight;
+			break;
+		case Origin::BottomRight:
+			newAbsoluteY -= textHeight;
+			newAbsoluteX -= textWidth;
+			break;
+	}
+
+	absoluteX = newAbsoluteX;
+	absoluteY = newAbsoluteY;
+}
+
 void Block::draw(rgb_matrix::FrameCanvas* canvas) {
 	if (textProvider) {
 		std::string text = textProvider->getText();
-		rgb_matrix::DrawText(canvas, font, x, y, color, text.c_str());
+		rgb_matrix::DrawText(canvas, font, absoluteX, absoluteY, color, text.c_str());
 	}
 }
 
@@ -56,6 +99,7 @@ void Block::update() {
 	auto now = std::chrono::steady_clock::now();
 	if (textProvider && now - lastUpdateTime >= (std::chrono::seconds)interval) {
 		textProvider->update();
+		setAbsolutePosition(textProvider->getText());
 		lastUpdateTime = now;
 	}
 }

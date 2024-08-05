@@ -32,14 +32,16 @@
 		{
 			"type": "http",
 			"url": "https://wttr.in/montreal?format=%t",
-			"position": {"x": 45, "y": 0},
+			"origin": "top-right",
+			"position": {"x": 63, "y": 0},
 			"color": [0, 128, 128],
 			"interval": 600
 		},
 		{
 			"type": "http",
 			"url": "https://wttr.in/montreal?format=%f",
-			"position": {"x": 45, "y": 6},
+			"origin": "top-right",
+			"position": {"x": 63, "y": 6},
 			"color": [0, 128, 64],
 			"interval": 600
 		}
