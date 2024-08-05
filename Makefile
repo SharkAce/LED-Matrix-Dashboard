@@ -23,7 +23,7 @@ RGB_LIBDIR=$(RGB_LIB_DISTRIBUTION)/lib
 RGB_LIBRARY_NAME=rgbmatrix
 RGB_LIBRARY=$(RGB_LIBDIR)/lib$(RGB_LIBRARY_NAME).a
 
-CXXFLAGS += -I$(RGB_INCDIR) -I$(JSON_INCDIR) -I$(INC_DIR) -O3 -std=c++17
+CXXFLAGS += -I$(RGB_INCDIR) -I$(JSON_INCDIR) -I$(INC_DIR) -O3 -Wno-psabi -std=c++17
 LDFLAGS += -L$(RGB_LIBDIR) -l$(RGB_LIBRARY_NAME) -lrt -lm -lpthread -lcurl
 
 SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
