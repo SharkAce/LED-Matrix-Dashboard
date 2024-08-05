@@ -1,8 +1,9 @@
 #include "pch.hpp"
 #include "Block.hpp"
 #include <signal.h>
-#include <unistd.h>
 #include <filesystem>
+#include <chrono>
+#include <thread>
 
 using rgb_matrix::RGBMatrix;
 using rgb_matrix::FrameCanvas;
@@ -34,7 +35,8 @@ int main(int argc, char *argv[]){
 	matrixOptions.cols = 64;
 	matrixOptions.chain_length = 1;
 	matrixOptions.parallel = 1;
-	matrixOptions.show_refresh_rate = false;
+	matrixOptions.show_refresh_rate = true;
+	matrixOptions.limit_refresh_rate_hz = 120;
 	matrixOptions.brightness = 50;
 	matrixOptions.disable_hardware_pulsing = false;
 
@@ -46,26 +48,24 @@ int main(int argc, char *argv[]){
 
 	auto blocks = Block::createBlocksFromJson(configPath, font);
 
-	struct timespec nextTime;
-	nextTime.tv_sec = time(NULL);
-	nextTime.tv_nsec = 0;
-	struct tm tm;
+	std::chrono::milliseconds interval(100);
+	auto nextTime = std::chrono::steady_clock::now();
 
 	signal(SIGTERM, InterruptHandler);
 	signal(SIGINT, InterruptHandler);
 
 	while(!interrupt_received){
 		offscreen->Clear();
-		localtime_r(&nextTime.tv_sec, &tm);
-
 		for (Block& block : blocks) {
 			block.update();
 			block.draw(offscreen);
 		}
 
-		clock_nanosleep(CLOCK_REALTIME, TIMER_ABSTIME, &nextTime, NULL);
+		std::this_thread::sleep_until(nextTime);
+
 		offscreen = matrix->SwapOnVSync(offscreen);
-		nextTime.tv_sec += 1;
+
+		nextTime += interval;
 	}
 	matrix->Clear();
 	delete matrix;
