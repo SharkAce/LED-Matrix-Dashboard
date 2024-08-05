@@ -27,7 +27,7 @@ private:
 	std::unique_ptr<TextProvider::Base> textProvider;
 	rgb_matrix::Font& font;
 	rgb_matrix::Color color;
-	std::chrono::time_point<std::chrono::steady_clock> last_update_time;
+	std::chrono::time_point<std::chrono::steady_clock> lastUpdateTime;
 	int interval;
 	int x;
 	int y;

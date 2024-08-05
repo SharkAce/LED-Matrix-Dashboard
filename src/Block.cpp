@@ -52,8 +52,8 @@ void Block::draw(rgb_matrix::FrameCanvas* canvas) {
 
 void Block::update() {
 	auto now = std::chrono::steady_clock::now();
-	if (textProvider && now - last_update_time >= (std::chrono::seconds)interval) {
+	if (textProvider && now - lastUpdateTime >= (std::chrono::seconds)interval) {
 		textProvider->update();
-		last_update_time = now;
+		lastUpdateTime = now;
 	}
 }
