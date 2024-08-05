@@ -43,7 +43,7 @@ std::vector<Block> Block::createBlocksFromJson(const std::string& filename, rgb_
 	return blocks;
 }
 
-void Block::draw(rgb_matrix::RGBMatrix* canvas) {
+void Block::draw(rgb_matrix::FrameCanvas* canvas) {
 	if (textProvider) {
 		std::string text = textProvider->getText();
 		rgb_matrix::DrawText(canvas, font, x, y, color, text.c_str());

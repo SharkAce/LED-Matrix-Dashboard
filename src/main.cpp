@@ -8,9 +8,9 @@
 #include <Block.hpp>
 
 using rgb_matrix::RGBMatrix;
+using rgb_matrix::FrameCanvas;
 using rgb_matrix::Color;
 using rgb_matrix::Font;
-const int microsecond = 1000000;
 
 std::string getProjectRoot() {
 	std::filesystem::path exePath = std::filesystem::canonical("/proc/self/exe");
@@ -41,24 +41,36 @@ int main(int argc, char *argv[]){
 	matrixOptions.brightness = 50;
 	matrixOptions.disable_hardware_pulsing = false;
 
-	RGBMatrix *canvas = RGBMatrix::CreateFromFlags(&argc, &argv, &matrixOptions);
+	RGBMatrix* matrix = RGBMatrix::CreateFromFlags(&argc, &argv, &matrixOptions);
+	if (matrix == NULL) {
+		return 1;
+	}
+	FrameCanvas* offscreen = matrix->CreateFrameCanvas();
 
 	auto blocks = Block::createBlocksFromJson(configPath, font);
+
+	struct timespec nextTime;
+	nextTime.tv_sec = time(NULL);
+	nextTime.tv_nsec = 0;
+	struct tm tm;
 
 	signal(SIGTERM, InterruptHandler);
 	signal(SIGINT, InterruptHandler);
 
 	while(!interrupt_received){
-		canvas->Clear();
+		offscreen->Clear();
+		localtime_r(&nextTime.tv_sec, &tm);
 
 		for (Block& block : blocks) {
 			block.update();
-			block.draw(canvas);
+			block.draw(offscreen);
 		}
 
-		usleep(5 * microsecond);
+		clock_nanosleep(CLOCK_REALTIME, TIMER_ABSTIME, &nextTime, NULL);
+		offscreen = matrix->SwapOnVSync(offscreen);
+		nextTime.tv_sec += 1;
 	}
-	canvas->Clear();
-	delete canvas;
+	matrix->Clear();
+	delete matrix;
 	return 0;
 }

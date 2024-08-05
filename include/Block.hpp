@@ -20,7 +20,7 @@ public:
 
 	Block(Config&& config);
 	static std::vector<Block> createBlocksFromJson(const std::string& filename, rgb_matrix::Font& font);
-	void draw(rgb_matrix::RGBMatrix* matrix);
+	void draw(rgb_matrix::FrameCanvas* matrix);
 	void update();
 
 private:
