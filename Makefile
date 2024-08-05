@@ -2,6 +2,7 @@ NAME=matrix-dashboard
 
 BUILD_DIR = build
 SRC_DIR := src
+INC_DIR := include
 MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 CURRENT_DIR := $(patsubst %/,%,$(dir $(MKFILE_PATH)))
 
@@ -14,13 +15,15 @@ SERVICE_NAME=$(NAME).service
 SERVICE_FILE=$(SERVICE_DIR)/$(SERVICE_NAME)
 SERVICE_FILE_TARGET=/etc/systemd/system/$(SERVICE_NAME)
 
+JSON_INCDIR=$(INC_DIR)/thirdparty/nlohmann
+
 RGB_LIB_DISTRIBUTION=rpi-rgb-led-matrix
 RGB_INCDIR=$(RGB_LIB_DISTRIBUTION)/include
 RGB_LIBDIR=$(RGB_LIB_DISTRIBUTION)/lib
 RGB_LIBRARY_NAME=rgbmatrix
 RGB_LIBRARY=$(RGB_LIBDIR)/lib$(RGB_LIBRARY_NAME).a
 
-CXXFLAGS += -I$(RGB_INCDIR) -O3 -std=c++17
+CXXFLAGS += -I$(RGB_INCDIR) -I$(JSON_INCDIR) -I$(INC_DIR) -O3 -std=c++17
 LDFLAGS += -L$(RGB_LIBDIR) -l$(RGB_LIBRARY_NAME) -lrt -lm -lpthread -lcurl
 
 SOURCES = $(wildcard $(SRC_DIR)/*.cpp)

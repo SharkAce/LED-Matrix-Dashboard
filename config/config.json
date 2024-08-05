@@ -1,0 +1,46 @@
+{
+	"blocks": [
+		{
+			"type": "time",
+			"format": "%A",
+			"position": {"x": 2, "y": 2},
+			"color": [64, 0, 128],
+			"interval": 5
+		},
+		{
+			"type": "time",
+			"format": "%Y/%m/%d",
+			"position": {"x": 2, "y": 9},
+			"color": [64, 0, 128],
+			"interval": 5
+		},
+		{
+			"type": "time",
+			"format": "%H:%M:%S",
+			"position": {"x": 2, "y": 16},
+			"color": [64, 0, 128],
+			"interval": 5
+		},
+		{
+			"type": "http",
+			"url": "https://ipinfo.io/ip",
+			"position": {"x": 2, "y": 23},
+			"color": [100, 0, 100],
+			"interval": 600
+		},
+		{
+			"type": "http",
+			"url": "https://wttr.in/montreal?format=%t",
+			"position": {"x": 65, "y": 0},
+			"color": [0, 128, 128],
+			"interval": 600
+		},
+		{
+			"type": "http",
+			"url": "https://wttr.in/montreal?format=%f",
+			"position": {"x": 65, "y": 6},
+			"color": [0, 128, 64],
+			"interval": 600
+		}
+	]
+}
