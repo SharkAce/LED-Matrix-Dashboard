@@ -60,9 +60,13 @@ std::vector<Block> Block::createBlocksFromJson(const std::string& filename, rgb_
 }
 
 void Block::setAbsolutePosition(const std::string& text) {
-	int textHeight = font.height(); 
-	int textWidth = 0;
-	for (char c : text) {
+	int textHeight = font.height() - 1; 
+	int textWidth = -1;
+
+	std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+	std::wstring wideText = converter.from_bytes(text);
+
+	for (wchar_t c : wideText) {
 		textWidth += font.CharacterWidth(c);
 	}
 
