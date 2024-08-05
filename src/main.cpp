@@ -35,7 +35,7 @@ int main(int argc, char *argv[]){
 	matrixOptions.cols = 64;
 	matrixOptions.chain_length = 1;
 	matrixOptions.parallel = 1;
-	matrixOptions.show_refresh_rate = true;
+	matrixOptions.show_refresh_rate = false;
 	matrixOptions.limit_refresh_rate_hz = 120;
 	matrixOptions.brightness = 50;
 	matrixOptions.disable_hardware_pulsing = false;
