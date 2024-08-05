@@ -1,12 +1,12 @@
 #include <Block.hpp>
 
-Block::Block(Block::Config config) : font(config.font) {
-	textProvider = std::move(config.textProvider);
-	color = config.color;
-	interval = config.interval;
-	x = config.x;
-	y = config.y;
-}
+Block::Block(Block::Config&& config) 
+	: font(config.font),
+	textProvider(std::move(config.textProvider)),
+	color(config.color),
+	interval(config.interval),
+	x(config.x),
+	y(config.y) {};
 
 std::vector<Block> Block::createBlocksFromJson(const std::string& filename, rgb_matrix::Font& font) {
 	std::ifstream file(filename);
@@ -24,7 +24,7 @@ std::vector<Block> Block::createBlocksFromJson(const std::string& filename, rgb_
 		rgb_matrix::Color color(r, g, b);
 
 		int x = item.at("position").at("x").get<int>();
-		int y = item.at("position").at("y").get<int>();
+		int y = item.at("position").at("y").get<int>() + font.baseline();
 
 		int interval = item.at("interval").get<int>();
 

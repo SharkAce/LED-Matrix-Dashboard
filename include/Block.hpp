@@ -4,7 +4,6 @@
 #include <led-matrix.h>
 #include <graphics.h>
 #include <TextProvider.hpp>
-#include <json.hpp>
 #include <fstream>
 #include <chrono>
 
@@ -19,7 +18,7 @@ public:
 		int y;
 	};
 
-	Block(Config config);
+	Block(Config&& config);
 	static std::vector<Block> createBlocksFromJson(const std::string& filename, rgb_matrix::Font& font);
 	void draw(rgb_matrix::RGBMatrix* matrix);
 	void update();
