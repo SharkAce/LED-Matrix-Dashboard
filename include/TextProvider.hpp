@@ -30,11 +30,17 @@ private:
 
 class Time : public Base {
 public:
-	Time(const std::string& format) : format(format) {};
+	struct RoundingConfig {
+		int seconds = 0;
+		int minutes = 0;
+		int hours = 0;
+	};
+	Time(const std::string& f, const RoundingConfig& c) : format(f), roundingConfig(c) {};
 	void update() override;
 
 private:
 	const std::string format;
+	RoundingConfig roundingConfig;
 };
 
 } // namespace TextProvider

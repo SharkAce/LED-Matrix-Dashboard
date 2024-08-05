@@ -10,9 +10,25 @@ namespace TextProvider {
 		if (type == "http") {
 			const std::string url = j.at("url").get<std::string>();
 			return std::make_unique<Http>(url);
+
 		} else if (type == "time") {
 			const std::string format = j.at("format").get<std::string>();
-			return std::make_unique<Time>(format);
+
+			Time::RoundingConfig roundingConfig;
+			if (j.contains("rounding")) {
+				nlohmann::json jRounding = j.at("rounding");
+				if (jRounding.contains("seconds")) {
+					roundingConfig.seconds = jRounding.at("seconds");
+				}
+				if (jRounding.contains("minutes")) {
+					roundingConfig.minutes = jRounding.at("minutes");
+				}
+				if (jRounding.contains("hours")) {
+					roundingConfig.hours = jRounding.at("hours");
+				}
+			}
+
+			return std::make_unique<Time>(format, roundingConfig);
 		} else {
 			throw std::runtime_error("Unknown TextProvider type");
 		}
@@ -49,6 +65,10 @@ namespace TextProvider {
 	void Time::update() {
 		std::time_t currentTime = std::time(nullptr);
 		std::tm* localTime = std::localtime(&currentTime);
+
+		localTime->tm_sec -= localTime->tm_sec % roundingConfig.seconds;
+		localTime->tm_sec -= localTime->tm_min % roundingConfig.minutes;
+		localTime->tm_sec -= localTime->tm_hour % roundingConfig.hours;
 
 		std::ostringstream oss;
 		oss << std::put_time(localTime, format.c_str());
