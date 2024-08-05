@@ -66,9 +66,15 @@ namespace TextProvider {
 		std::time_t currentTime = std::time(nullptr);
 		std::tm* localTime = std::localtime(&currentTime);
 
-		localTime->tm_sec -= localTime->tm_sec % roundingConfig.seconds;
-		localTime->tm_sec -= localTime->tm_min % roundingConfig.minutes;
-		localTime->tm_sec -= localTime->tm_hour % roundingConfig.hours;
+		if (roundingConfig.seconds > 0) {
+			localTime->tm_sec -= localTime->tm_sec % roundingConfig.seconds;
+		}
+		if (roundingConfig.minutes > 0) {
+			localTime->tm_min -= localTime->tm_min % roundingConfig.minutes;
+		}
+		if (roundingConfig.hours > 0) {
+			localTime->tm_hour -= localTime->tm_hour % roundingConfig.hours;
+		}
 
 		std::ostringstream oss;
 		oss << std::put_time(localTime, format.c_str());
