@@ -1,11 +1,11 @@
 #ifndef BLOCK_HPP
 #define BLOCK_HPP
 
-#include <led-matrix.h>
 #include <graphics.h>
-#include <TextProvider.hpp>
-#include <fstream>
+#include <content-streamer.h>
 #include <chrono>
+#include <vector>
+#include "TextProvider.hpp"
 
 class Block {
 public:
@@ -31,7 +31,6 @@ private:
 	int interval;
 	int x;
 	int y;
-
 };
 
-#endif
+#endif // BLOCK_HPP

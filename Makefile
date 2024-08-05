@@ -26,25 +26,32 @@ RGB_LIBRARY=$(RGB_LIBDIR)/lib$(RGB_LIBRARY_NAME).a
 CXXFLAGS += -I$(RGB_INCDIR) -I$(JSON_INCDIR) -I$(INC_DIR) -O3 -Wno-psabi -std=c++17
 LDFLAGS += -L$(RGB_LIBDIR) -l$(RGB_LIBRARY_NAME) -lrt -lm -lpthread -lcurl
 
+PCH_HEADER = $(INC_DIR)/pch.hpp
+PCH_FILE = $(INC_DIR)/pch.hpp.gch
+
 SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
 OBJECTS = $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SOURCES))
 DEPENDS = $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.d,$(SOURCES))
 
-.PHONY: all install uninstall clean
+.PHONY: all
 all: $(EXEC_REL)
 
-$(EXEC_REL): $(OBJECTS) $(RGB_LIBRARY)
+$(EXEC_REL): $(RGB_LIBRARY) $(OBJECTS)
 	$(CXX) $(OBJECTS) -o $@ $(LDFLAGS)
+
+$(PCH_FILE): $(PCH_HEADER)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 -include $(DEPENDS)
 
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp $(PCH_FILE)
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -MMD -MP -c $< -o $@
 
 $(RGB_LIBRARY):
 	$(MAKE) -C $(RGB_LIBDIR)
 
+.PHONY: install uninstall clean
 install: $(EXEC_REL)
 	@if ! [ "$(shell id -u)" = 0 ]; then\
 		echo "This command requires root privileges.";\
@@ -61,7 +68,10 @@ install: $(EXEC_REL)
 	@echo "$(NAME)"
 
 uninstall:
-	@id -u > /dev/null 2>&1 || (echo "This command requires root privileges."; exit 1)
+	@if ! [ "$(shell id -u)" = 0 ]; then\
+		echo "This command requires root privileges.";\
+		exit 1;\
+	fi
 	systemctl stop $(SERVICE_NAME)
 	systemctl disable $(SERVICE_NAME)
 	rm -f $(EXEC_TARGET)
@@ -69,4 +79,4 @@ uninstall:
 	@echo Uninstall complete.
 
 clean:
-	rm -f $(OBJECTS) $(DEPENDS) $(EXEC_REL)
+	rm -f $(OBJECTS) $(DEPENDS) $(EXEC_REL) $(PCH_FILE)

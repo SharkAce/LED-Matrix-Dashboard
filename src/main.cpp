@@ -1,11 +1,8 @@
-#include <led-matrix.h>
-#include <graphics.h>
+#include "pch.hpp"
+#include "Block.hpp"
 #include <signal.h>
 #include <unistd.h>
-#include <string>
-#include <iostream>
 #include <filesystem>
-#include <Block.hpp>
 
 using rgb_matrix::RGBMatrix;
 using rgb_matrix::FrameCanvas;

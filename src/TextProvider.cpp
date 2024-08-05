@@ -1,4 +1,6 @@
-#include <TextProvider.hpp>
+#include "pch.hpp"
+#include "TextProvider.hpp"
+#include <iostream>
 
 namespace TextProvider {
 

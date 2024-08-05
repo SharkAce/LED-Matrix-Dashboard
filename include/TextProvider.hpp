@@ -1,15 +1,9 @@
 #ifndef TEXT_PROVIDER_HPP
 #define TEXT_PROVIDER_HPP
 
-#include <string>
 #include <memory>
-#include <json.hpp>
-#include <stdexcept>
-#include <iostream>
-#include <curl/curl.h>
-#include <ctime>
-#include <iomanip>
-#include <sstream>
+#include <string>
+#include <json_fwd.hpp>
 
 namespace TextProvider {
 
@@ -45,4 +39,4 @@ private:
 
 } // namespace TextProvider
 
-#endif
+#endif // TEXT_PROVIDER_HPP
