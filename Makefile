@@ -56,21 +56,17 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp $(PCH_FILE)
 $(RGB_LIBRARY):
 	$(MAKE) -C $(RGB_LIBDIR)
 
-.PHONY: install uninstall clean
-install: $(EXEC_REL)
-	@if [ "$(shell id -u)" != 0 ]; then\
-		echo "This command requires root privileges.";\
-		exit 1;\
-	fi
+.PHONY: check-root install uninstall clean
+check-root:
+	@[ "$(shell id -u)" -eq 0 ] || { echo "This rule must be run as root"; exit 1; }
+
+install: check-root $(EXEC_REL)
 	ln -sf $(EXEC_ABS) $(EXEC_TARGET)
 	cp -f $(SERVICE_FILE) $(SERVICE_FILE_TARGET)
 	systemctl enable systemd-networkd-wait-online.service
 	systemctl enable $(SERVICE_NAME)
 	mkdir -p $(dir $(CONFIG_FILE_TARGET))
-	@if [ -f $(CONFIG_FILE_TARGET) ]; then\
-		echo "Moving old config file to $(CONFIG_FILE_BACKUP).";\
-		mv $(CONFIG_FILE_TARGET) $(CONFIG_FILE_BACKUP);\
-	fi
+	[ -e "$(CONFIG_FILE_TARGET)" ] && mv $(CONFIG_FILE_TARGET) $(CONFIG_FILE_BACKUP)
 	cp -f $(CONFIG_FILE) $(CONFIG_FILE_TARGET)
 	@echo
 	@echo "Service installed. You can now start it with:"
@@ -78,11 +74,7 @@ install: $(EXEC_REL)
 	@echo "You can also run it in the current shell with:"
 	@echo "$(NAME)"
 
-uninstall:
-	@if ! [ "$(shell id -u)" = 0 ]; then\
-		echo "This command requires root privileges.";\
-		exit 1;\
-	fi
+uninstall: check-root
 	systemctl stop $(SERVICE_NAME)
 	systemctl disable $(SERVICE_NAME)
 	rm -f $(EXEC_TARGET)
