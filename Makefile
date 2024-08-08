@@ -1,38 +1,38 @@
 NAME=matrix-dashboard
 
-BUILD_DIR = build
+BUILD_DIR := build
 SRC_DIR := src
 INC_DIR := include
 MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 CURRENT_DIR := $(patsubst %/,%,$(dir $(MKFILE_PATH)))
 
-EXEC_REL=$(BUILD_DIR)/$(NAME)
-EXEC_ABS=$(CURRENT_DIR)/$(BUILD_DIR)/$(NAME)
-EXEC_TARGET=/usr/bin/$(NAME)
+EXEC_REL := $(BUILD_DIR)/$(NAME)
+EXEC_ABS := $(CURRENT_DIR)/$(BUILD_DIR)/$(NAME)
+EXEC_TARGET := /usr/bin/$(NAME)
 
-SERVICE_DIR=systemd
-SERVICE_NAME=$(NAME).service
-SERVICE_FILE=$(SERVICE_DIR)/$(SERVICE_NAME)
-SERVICE_FILE_TARGET=/etc/systemd/system/$(SERVICE_NAME)
+SERVICE_DIR := systemd
+SERVICE_NAME := $(NAME).service
+SERVICE_FILE := $(SERVICE_DIR)/$(SERVICE_NAME)
+SERVICE_FILE_TARGET := /etc/systemd/system/$(SERVICE_NAME)
 
-CONFIG_DIR=config
-CONFIG_FILE=$(CONFIG_DIR)/config.json
-CONFIG_FILE_TARGET=/etc/$(NAME)/config.json
-CONFIG_FILE_BACKUP=/etc/$(NAME)/config.json.bak
+CONFIG_DIR := config
+CONFIG_FILE := $(CONFIG_DIR)/config.json
+CONFIG_FILE_TARGET := /etc/$(NAME)/config.json
+CONFIG_FILE_BACKUP := /etc/$(NAME)/config.json.bak
 
-JSON_INCDIR=$(INC_DIR)/thirdparty/nlohmann
+JSON_INCDIR := $(INC_DIR)/thirdparty/nlohmann
 
-RGB_LIB_DISTRIBUTION=rpi-rgb-led-matrix
-RGB_INCDIR=$(RGB_LIB_DISTRIBUTION)/include
-RGB_LIBDIR=$(RGB_LIB_DISTRIBUTION)/lib
-RGB_LIBRARY_NAME=rgbmatrix
-RGB_LIBRARY=$(RGB_LIBDIR)/lib$(RGB_LIBRARY_NAME).a
+RGB_LIB_DISTRIBUTION := rpi-rgb-led-matrix
+RGB_INCDIR := $(RGB_LIB_DISTRIBUTION)/include
+RGB_LIBDIR := $(RGB_LIB_DISTRIBUTION)/lib
+RGB_LIBRARY_NAME := rgbmatrix
+RGB_LIBRARY := $(RGB_LIBDIR)/lib$(RGB_LIBRARY_NAME).a
 
 CXXFLAGS += -I$(RGB_INCDIR) -I$(JSON_INCDIR) -I$(INC_DIR) -O3 -Wno-psabi -std=c++17
 LDFLAGS += -L$(RGB_LIBDIR) -l$(RGB_LIBRARY_NAME) -lrt -lm -lpthread -lcurl
 
-PCH_HEADER = $(INC_DIR)/pch.hpp
-PCH_FILE = $(INC_DIR)/pch.hpp.gch
+PCH_HEADER := $(INC_DIR)/pch.hpp
+PCH_FILE := $(INC_DIR)/pch.hpp.gch
 
 SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
 OBJECTS = $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SOURCES))
