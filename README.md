@@ -58,15 +58,16 @@ The configuration is defined in JSON format and specifies the matrix options and
 
 *Properties are required unless specified otherwise.*
 
-### `matrixConfig`
+### `matrix`
 - **Description**: Contains configuration options for the `rgbmatrix` library. Additional options can be specified by appending flags to the execution command.
 - **Structure**:
-  - `rows` (integer): Number of rows in the matrix.
-  - `cols` (integer): Number of columns in the matrix.
-  - `brightness` (integer): Brightness level of the display.
+  - `size` (object, optional): Specifies the size of the matrix.
+    - `rows` (integer): Number of rows in the matrix.
+    - `cols` (integer): Number of columns in the matrix.
+  - `brightness` (integer, optional): Brightness level of the display.
   - `font` (string): Font file to be used.
-  - `limit_refresh_rate_hz` (integer): Refresh rate limit in Hertz.
-  - `led_rgb_sequence` (string): RGB sequence. Example: "RGB".
+  - `limit_refresh_rate_hz` (integer, optional): Refresh rate limit in Hertz.
+  - `led_rgb_sequence` (string, optional): RGB sequence. Example: "RGB".
 
 ### `blocks`
 - **Description**: An array of block objects that define each element displayed on the screen.
@@ -96,9 +97,8 @@ The configuration is defined in JSON format and specifies the matrix options and
 ### Example config
 ```json
 {
-  "matrixConfig": {
-    "rows": 32,
-    "cols": 64,
+  "matrix": {
+    "size": {"rows": 32, "cols": 64},
     "brightness": 50,
     "font": "4x6.bdf",
     "limit_refresh_rate_hz": 120,

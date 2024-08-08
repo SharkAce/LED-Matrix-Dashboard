@@ -43,14 +43,22 @@ static void InterruptHandler(int signo) {
 int main(int argc, char *argv[]){
 	json config = getConfig();
 
-	json matrixConfig = config.at("matrixConfig");
+	json matrixConfig = config.at("matrix");
 	RGBMatrix::Options matrixOptions;
-	matrixOptions.rows = matrixConfig.at("rows").get<int>();
-	matrixOptions.cols = matrixConfig.at("cols").get<int>();
-	matrixOptions.brightness = matrixConfig.at("brightness").get<int>();
-	matrixOptions.limit_refresh_rate_hz = matrixConfig.at("limit_refresh_rate_hz").get<int>();
-	std::string led_rgb_sequence = matrixConfig.at("led_rgb_sequence").get<std::string>();
-	matrixOptions.led_rgb_sequence = led_rgb_sequence.c_str();
+	if (matrixConfig.contains("size")) {
+		matrixOptions.rows = matrixConfig.at("size").at("rows").get<int>();
+		matrixOptions.cols = matrixConfig.at("size").at("cols").get<int>();
+	}
+	if (matrixConfig.contains("brightness")) {
+		matrixOptions.brightness = matrixConfig.at("brightness").get<int>();
+	}
+	if (matrixConfig.contains("limit_refresh_rate_hz")) {
+		matrixOptions.limit_refresh_rate_hz = matrixConfig.at("limit_refresh_rate_hz").get<int>();
+	}
+	if (matrixConfig.contains("led_rgb_sequence")) {
+		std::string led_rgb_sequence = matrixConfig.at("led_rgb_sequence").get<std::string>();
+		matrixOptions.led_rgb_sequence = led_rgb_sequence.c_str();
+	}
 
 	Font font;
 	std::string fontPath = getProjectRoot()
