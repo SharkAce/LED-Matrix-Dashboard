@@ -51,6 +51,70 @@ Once installed, you can either start the service or run the executable in the cu
     ```bash
     matrix-dashboard
     ```
+    
+## Configuration
+
+The configuration is defined in JSON format and specifies the blocks to be displayed, including their type, format, position, color, and update interval. Below is a detailed explanation of each parameter.
+
+### `matrixConfig`
+- **Description**: Contains configuration options for the `rgb_matrix` library. Additional options can be specified by appending flags to the execution command.
+- **Structure**:
+  - `rows` (integer): Number of rows in the matrix.
+  - `cols` (integer): Number of columns in the matrix.
+  - `brightness` (integer): Brightness level of the display.
+  - `font` (string): Font file to be used.
+  - `limit_refresh_rate_hz` (integer): Refresh rate limit in Hertz.
+  - `led_rgb_sequence` (string): RGB sequence. Example: "RGB".
+
+### `blocks`
+- **Description**: An array of block objects that define each element displayed on the screen.
+- **Structure**:
+  - `type` (string): Specifies the type of block. Valid options are `"time"` and `"http"`.
+  - `origin` (string, optional): Specifies the origin point for positioning the block. Can be `"top-left"` (default), `"top-right"`, `"bottom-left"`, or `"bottom-right"`.
+  - `position` (object): Specifies the x and y coordinates for the block's position on the screen.
+    - `x` (integer): The horizontal position on the screen.
+    - `y` (integer): The vertical position on the screen.
+  - `color` (array of three integers): Defines the RGB color of the block text. Example: `[64, 0, 128]` represents a purple color.
+  - `interval` (integer): The time interval in seconds at which the block content is updated. For example, `600` means the block will update every 10 minutes.
+
+#### **`time` Blocks**:
+- **Description**: Display the current date and/or time.
+- **Additional Properties**:
+  - `format` (string): Specifies how the date/time is formatted. The format follows the `strftime` syntax, such as `%A` for the full weekday name, or `%H:%M:%S` for hours, minutes, and seconds.
+  - `rounding` (object, optional): Specifies rounding intervals for hours, minutes, and seconds.
+    - `seconds` (integer, optional): Rounds the seconds to the nearest multiple of the specified value. Example: `{"seconds": 5}` will round the seconds to `0`, `5`, `10`, etc.
+    - `minutes` (integer, optional): Rounds the minutes similarly to the nearest multiple.
+    - `hours` (integer, optional): Rounds the hours to the nearest multiple.
+
+#### **`http` Blocks**:
+- **Description**: Display data fetched from a specified URL.
+- **Additional Properties**:
+  - `url` (string, required): The URL from which data will be fetched.
+
+### Example config
+```json
+{
+  "matrixConfig": {
+    "rows": 32,
+    "cols": 64,
+    "brightness": 50,
+    "font": "4x6.bdf",
+    "limit_refresh_rate_hz": 120,
+    "led_rgb_sequence": "RGB"
+  },
+  "blocks": [
+    {
+      "type": "time",
+      "format": "%H:%M:%S",
+      "rounding": {"seconds": 5},
+      "position": {"x": 2, "y": 16},
+      "color": [64, 0, 128],
+      "interval": 5
+    }
+    // Additional blocks
+  ]
+}
+```
 
 ## Troubleshooting
 
