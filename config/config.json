@@ -40,7 +40,7 @@
 		},
 		{
 			"type": "http",
-			"url": "https://wttr.inal?format=%t",
+			"url": "https://wttr.in?format=%t",
 			"origin": "top-right",
 			"position": {"x": 64, "y": 0},
 			"color": [0, 128, 128],
@@ -48,7 +48,7 @@
 		},
 		{
 			"type": "http",
-			"url": "https://wttr.in/montreal?format=%f",
+			"url": "https://wttr.in?format=%f",
 			"origin": "top-right",
 			"position": {"x": 64, "y": 6},
 			"color": [0, 128, 64],
