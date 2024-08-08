@@ -41,8 +41,10 @@ int main(int argc, char *argv[]){
 	std::string fontPath = getProjectRoot()
 			.append("rpi-rgb-led-matrix/fonts/")
 			.append((matrixConfig.at("font").get<std::string>()));
-	font.LoadFont(fontPath.c_str());
-
+	if (!font.LoadFont(fontPath.c_str())) {
+		throw std::runtime_error("Could not load font");
+	}
+	
 	RGBMatrix* matrix = RGBMatrix::CreateFromFlags(&argc, &argv, &matrixOptions);
 	if (matrix == NULL) {
 		return 1;
