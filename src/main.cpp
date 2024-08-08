@@ -5,6 +5,7 @@
 #include <chrono>
 #include <thread>
 #include <fstream>
+#include <stdexcept>
 
 using rgb_matrix::RGBMatrix;
 using rgb_matrix::FrameCanvas;
@@ -17,22 +18,36 @@ std::string getProjectRoot() {
 	return exePath.parent_path().parent_path().string().append("/");
 }
 
+json getConfig() {
+	const std::string etcPath = "/etc/matrix-dashboard/config.json";
+	const std::string localPath = getProjectRoot().append("config/config.json");
+
+	std::ifstream configStream(etcPath);
+	if (configStream.good()) {
+		return json::parse(configStream);
+	}
+
+	configStream.open(localPath);
+	if (configStream.good()) {
+		return json::parse(configStream);
+	}
+
+	throw std::runtime_error("Config file not found");
+}
+
 volatile bool interrupt_received = false;
 static void InterruptHandler(int signo) {
 	interrupt_received = true;
 }
 
 int main(int argc, char *argv[]){
-	std::string configPath = getProjectRoot().append("config/config.json");
-	std::ifstream jsonFile(configPath);
-	json config = json::parse(jsonFile);
+	json config = getConfig();
 
 	json matrixConfig = config.at("matrixConfig");
 	RGBMatrix::Options matrixOptions;
 	matrixOptions.rows = matrixConfig.at("rows").get<int>();
 	matrixOptions.cols = matrixConfig.at("cols").get<int>();
 	matrixOptions.brightness = matrixConfig.at("brightness").get<int>();
-	matrixOptions.show_refresh_rate = matrixConfig.at("show_refresh_rate").get<bool>();
 	matrixOptions.limit_refresh_rate_hz = matrixConfig.at("limit_refresh_rate_hz").get<int>();
 	std::string led_rgb_sequence = matrixConfig.at("led_rgb_sequence").get<std::string>();
 	matrixOptions.led_rgb_sequence = led_rgb_sequence.c_str();

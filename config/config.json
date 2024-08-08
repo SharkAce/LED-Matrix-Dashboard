@@ -1,12 +1,11 @@
 {
 	"matrixConfig": {
-		"font": "4x6.bdf",
-		"led_rgb_sequence": "RBG",
 		"rows": 32,
 		"cols": 64,
-		"show_refresh_rate": false,
+		"brightness": 50,
+		"font": "4x6.bdf",
 		"limit_refresh_rate_hz": 120,
-		"brightness": 50
+		"led_rgb_sequence": "RGB"
 	},
 	"blocks": [
 		{

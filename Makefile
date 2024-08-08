@@ -15,6 +15,11 @@ SERVICE_NAME=$(NAME).service
 SERVICE_FILE=$(SERVICE_DIR)/$(SERVICE_NAME)
 SERVICE_FILE_TARGET=/etc/systemd/system/$(SERVICE_NAME)
 
+CONFIG_DIR=config
+CONFIG_FILE=$(CONFIG_DIR)/config.json
+CONFIG_FILE_TARGET=/etc/$(NAME)/config.json
+CONFIG_FILE_BACKUP=/etc/$(NAME)/config.json.bak
+
 JSON_INCDIR=$(INC_DIR)/thirdparty/nlohmann
 
 RGB_LIB_DISTRIBUTION=rpi-rgb-led-matrix
@@ -53,7 +58,7 @@ $(RGB_LIBRARY):
 
 .PHONY: install uninstall clean
 install: $(EXEC_REL)
-	@if ! [ "$(shell id -u)" = 0 ]; then\
+	@if [ "$(shell id -u)" != 0 ]; then\
 		echo "This command requires root privileges.";\
 		exit 1;\
 	fi
@@ -61,6 +66,12 @@ install: $(EXEC_REL)
 	cp -f $(SERVICE_FILE) $(SERVICE_FILE_TARGET)
 	systemctl enable systemd-networkd-wait-online.service
 	systemctl enable $(SERVICE_NAME)
+	mkdir -p $(dir $(CONFIG_FILE_TARGET))
+	@if [ -f $(CONFIG_FILE_TARGET) ]; then\
+		echo "Moving old config file to $(CONFIG_FILE_BACKUP).";\
+		mv $(CONFIG_FILE_TARGET) $(CONFIG_FILE_BACKUP);\
+	fi
+	cp -f $(CONFIG_FILE) $(CONFIG_FILE_TARGET)
 	@echo
 	@echo "Service installed. You can now start it with:"
 	@echo "systemctl start $(SERVICE_NAME)"
