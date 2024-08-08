@@ -1,6 +1,5 @@
 #include "pch.hpp"
 #include "Block.hpp"
-#include <fstream>
 
 Block::Block(Block::Config&& config) 
 	: font(config.font),
@@ -11,14 +10,10 @@ Block::Block(Block::Config&& config)
 	relativeX(config.relativeX),
 	relativeY(config.relativeY) {};
 
-std::vector<Block> Block::createBlocksFromJson(const std::string& filename, rgb_matrix::Font& font) {
-	std::ifstream file(filename);
-	nlohmann::json j;
-	file >> j;
-
+std::vector<Block> Block::createBlocksFromJson(const nlohmann::json& j, rgb_matrix::Font& font) {
 	std::vector<Block> blocks;
 
-	for (const auto& item : j.at("blocks")) {
+	for (const auto& item : j) {
 		auto textProvider = TextProvider::createFromJSON(item);
 
 		int r = item.at("color")[0].get<int>();
@@ -29,7 +24,7 @@ std::vector<Block> Block::createBlocksFromJson(const std::string& filename, rgb_
 		int relativeX = item.at("position").at("x").get<int>();
 		int relativeY = item.at("position").at("y").get<int>();
 
-		int interval = item.at("interval").get<int>();
+		int interval = item.at("interval");
 
 		Block::Origin origin = Block::Origin::TopLeft;
 		if (item.contains("origin")) {
@@ -47,7 +42,7 @@ std::vector<Block> Block::createBlocksFromJson(const std::string& filename, rgb_
 			.textProvider = std::move(textProvider),
 			.font = font,
 			.color = color,
-			.interval = interval,
+			.interval = 5,
 			.origin = origin,
 			.relativeX = relativeX,
 			.relativeY = relativeY

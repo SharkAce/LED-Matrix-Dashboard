@@ -27,7 +27,7 @@ public:
 	};
 
 	Block(Config&& config);
-	static std::vector<Block> createBlocksFromJson(const std::string& filename, rgb_matrix::Font& font);
+	static std::vector<Block> createBlocksFromJson(const nlohmann::json& config, rgb_matrix::Font& font);
 	void draw(rgb_matrix::FrameCanvas* matrix);
 	void update();
 

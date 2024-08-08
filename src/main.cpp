@@ -4,11 +4,13 @@
 #include <filesystem>
 #include <chrono>
 #include <thread>
+#include <fstream>
 
 using rgb_matrix::RGBMatrix;
 using rgb_matrix::FrameCanvas;
 using rgb_matrix::Color;
 using rgb_matrix::Font;
+using nlohmann::json;
 
 std::string getProjectRoot() {
 	std::filesystem::path exePath = std::filesystem::canonical("/proc/self/exe");
@@ -21,24 +23,25 @@ static void InterruptHandler(int signo) {
 }
 
 int main(int argc, char *argv[]){
-	Font font;
-	std::string fontPath = getProjectRoot().append("rpi-rgb-led-matrix/fonts/4x6.bdf");
-	font.LoadFont(fontPath.c_str());
-
 	std::string configPath = getProjectRoot().append("config/config.json");
+	std::ifstream jsonFile(configPath);
+	json config = json::parse(jsonFile);
 
-	// My defaults change it accordingly
+	json matrixConfig = config.at("matrixConfig");
 	RGBMatrix::Options matrixOptions;
-	matrixOptions.hardware_mapping = "regular";
-	matrixOptions.led_rgb_sequence = "RBG";
-	matrixOptions.rows = 32;
-	matrixOptions.cols = 64;
-	matrixOptions.chain_length = 1;
-	matrixOptions.parallel = 1;
-	matrixOptions.show_refresh_rate = false;
-	matrixOptions.limit_refresh_rate_hz = 120;
-	matrixOptions.brightness = 50;
-	matrixOptions.disable_hardware_pulsing = false;
+	matrixOptions.rows = matrixConfig.at("rows").get<int>();
+	matrixOptions.cols = matrixConfig.at("cols").get<int>();
+	matrixOptions.brightness = matrixConfig.at("brightness").get<int>();
+	matrixOptions.show_refresh_rate = matrixConfig.at("show_refresh_rate").get<bool>();
+	matrixOptions.limit_refresh_rate_hz = matrixConfig.at("limit_refresh_rate_hz").get<int>();
+	std::string led_rgb_sequence = matrixConfig.at("led_rgb_sequence").get<std::string>();
+	matrixOptions.led_rgb_sequence = led_rgb_sequence.c_str();
+
+	Font font;
+	std::string fontPath = getProjectRoot()
+			.append("rpi-rgb-led-matrix/fonts/")
+			.append((matrixConfig.at("font").get<std::string>()));
+	font.LoadFont(fontPath.c_str());
 
 	RGBMatrix* matrix = RGBMatrix::CreateFromFlags(&argc, &argv, &matrixOptions);
 	if (matrix == NULL) {
@@ -46,7 +49,7 @@ int main(int argc, char *argv[]){
 	}
 	FrameCanvas* offscreen = matrix->CreateFrameCanvas();
 
-	auto blocks = Block::createBlocksFromJson(configPath, font);
+	auto blocks = Block::createBlocksFromJson(config.at("blocks"), font);
 
 	std::chrono::milliseconds interval(100);
 	auto nextTime = std::chrono::steady_clock::now();

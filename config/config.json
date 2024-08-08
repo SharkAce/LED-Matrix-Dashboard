@@ -1,4 +1,13 @@
 {
+	"matrixConfig": {
+		"font": "4x6.bdf",
+		"led_rgb_sequence": "RBG",
+		"rows": 32,
+		"cols": 64,
+		"show_refresh_rate": false,
+		"limit_refresh_rate_hz": 120,
+		"brightness": 50
+	},
 	"blocks": [
 		{
 			"type": "time",
@@ -31,7 +40,7 @@
 		},
 		{
 			"type": "http",
-			"url": "https://wttr.in/montreal?format=%t",
+			"url": "https://wttr.inal?format=%t",
 			"origin": "top-right",
 			"position": {"x": 64, "y": 0},
 			"color": [0, 128, 128],
