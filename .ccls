@@ -1,7 +1,7 @@
 %clang
 -I.
 -I./include
--I./include/thirdparty/nlohmann
+-I./include/thirdparty
 -I./rpi-rgb-led-matrix/include
 -L./rpi-rgb-led-matrix/lib
 -lrgbmatrix
