@@ -54,10 +54,12 @@ Once installed, you can either start the service or run the executable in the cu
     
 ## Configuration
 
-The configuration is defined in JSON format and specifies the blocks to be displayed, including their type, format, position, color, and update interval. Below is a detailed explanation of each parameter.
+The configuration is defined in JSON format and specifies the matrix options and the blocks to be displayed. After installing The configuration file will be located at `/etc/matrix-dashboard/config.json`. Below is a detailed explanation of each parameter.
+
+*Properties are required unless specified otherwise.*
 
 ### `matrixConfig`
-- **Description**: Contains configuration options for the `rgb_matrix` library. Additional options can be specified by appending flags to the execution command.
+- **Description**: Contains configuration options for the `rgbmatrix` library. Additional options can be specified by appending flags to the execution command.
 - **Structure**:
   - `rows` (integer): Number of rows in the matrix.
   - `cols` (integer): Number of columns in the matrix.
@@ -77,7 +79,7 @@ The configuration is defined in JSON format and specifies the blocks to be displ
   - `color` (array of three integers): Defines the RGB color of the block text. Example: `[64, 0, 128]` represents a purple color.
   - `interval` (integer): The time interval in seconds at which the block content is updated. For example, `600` means the block will update every 10 minutes.
 
-#### **`time` Blocks**:
+### `time` Blocks:
 - **Description**: Display the current date and/or time.
 - **Additional Properties**:
   - `format` (string): Specifies how the date/time is formatted. The format follows the `strftime` syntax, such as `%A` for the full weekday name, or `%H:%M:%S` for hours, minutes, and seconds.
@@ -86,10 +88,10 @@ The configuration is defined in JSON format and specifies the blocks to be displ
     - `minutes` (integer, optional): Rounds the minutes similarly to the nearest multiple.
     - `hours` (integer, optional): Rounds the hours to the nearest multiple.
 
-#### **`http` Blocks**:
+### `http` Blocks:
 - **Description**: Display data fetched from a specified URL.
 - **Additional Properties**:
-  - `url` (string, required): The URL from which data will be fetched.
+  - `url` (string): The URL from which data will be fetched.
 
 ### Example config
 ```json
@@ -100,18 +102,25 @@ The configuration is defined in JSON format and specifies the blocks to be displ
     "brightness": 50,
     "font": "4x6.bdf",
     "limit_refresh_rate_hz": 120,
-    "led_rgb_sequence": "RGB"
+    "led_rgb_sequence": "RBG"
   },
   "blocks": [
     {
       "type": "time",
       "format": "%H:%M:%S",
       "rounding": {"seconds": 5},
-      "position": {"x": 2, "y": 16},
+      "position": {"x": 2, "y": 10},
       "color": [64, 0, 128],
       "interval": 5
+    },
+    {
+      "type": "http",
+      "url": "https://wttr.in?format=%t",
+      "origin": "top-right",
+      "position": {"x": 2, "y": 10},
+      "color": [0, 128, 128],
+      "interval": 600
     }
-    // Additional blocks
   ]
 }
 ```
