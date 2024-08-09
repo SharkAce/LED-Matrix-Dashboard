@@ -24,7 +24,7 @@ std::vector<Block> Block::createBlocksFromJson(const nlohmann::json& j, rgb_matr
 		int relativeX = item.at("position").at("x").get<int>();
 		int relativeY = item.at("position").at("y").get<int>();
 
-		int interval = item.at("interval");
+		int interval = item.at("interval").get<int>();
 
 		Block::Origin origin = Block::Origin::TopLeft;
 		if (item.contains("origin")) {
@@ -42,7 +42,7 @@ std::vector<Block> Block::createBlocksFromJson(const nlohmann::json& j, rgb_matr
 			.textProvider = std::move(textProvider),
 			.font = font,
 			.color = color,
-			.interval = 5,
+			.interval = interval,
 			.origin = origin,
 			.relativeX = relativeX,
 			.relativeY = relativeY
