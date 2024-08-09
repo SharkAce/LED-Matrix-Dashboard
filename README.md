@@ -49,7 +49,7 @@ Once installed, you can either start the service or run the executable in the cu
 - **Run the executable:**
 
     ```bash
-    matrix-dashboard
+    sudo matrix-dashboard
     ```
     
 ## Configuration
