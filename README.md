@@ -15,7 +15,7 @@ The panel needs to be connected to the Pi GPIOs according to [this schema](https
 
 ## Installation
 
-To install the `matrix-dashboard` service, follow these steps:
+To build and install the `matrix-dashboard` service, follow these steps:
 
 1. **Clone the repository with submodules:**
 
