@@ -3,7 +3,7 @@
 		"size": {"rows": 32, "cols": 64},
 		"brightness": 50,
 		"font": "4x6.bdf",
-		"limit_refresh_rate_hz": 60,
+		"limit_refresh_rate_hz": 120,
 		"led_rgb_sequence": "RGB"
 	},
 	"blocks": [
