@@ -54,7 +54,9 @@ Once installed, you can either start the service or run the executable in the cu
     
 ## Configuration
 
-The configuration is defined in JSON format and specifies the matrix options and the blocks to be displayed. After installing The configuration file will be located at `/etc/matrix-dashboard/config.json`. Below is a detailed explanation of each parameter.
+The configuration is defined in JSON format and specifies the matrix options and the blocks to be displayed. After installation, the configuration file will be located at `/etc/matrix-dashboard/config.json`. A custom configuration file can also be specified using the `-c` flag. 
+
+Below is a detailed explanation of each parameter.
 
 *Properties are required unless specified otherwise.*
 
