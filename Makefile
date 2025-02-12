@@ -50,7 +50,7 @@ $(PCH_FILE): $(PCH_HEADER)
 
 -include $(DEPENDS)
 
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp $(PCH_FILE)
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp $(PCH_FILE) $(RGB_LIBRARY)
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -MMD -MP -c $< -o $@
 

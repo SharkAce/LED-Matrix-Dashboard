@@ -1,16 +1,14 @@
 #include "pch.hpp"
 #include "Block.hpp"
+#include "Config.hpp"
 #include <signal.h>
 #include <getopt.h>
-#include <filesystem>
 #include <chrono>
 #include <thread>
-#include <fstream>
 #include <stdexcept>
 
 using rgb_matrix::RGBMatrix;
 using rgb_matrix::FrameCanvas;
-using rgb_matrix::Color;
 using rgb_matrix::Font;
 using nlohmann::json;
 
@@ -26,28 +24,6 @@ static int usage(char *progname) {
 	rgb_matrix::PrintMatrixFlags(stderr);
 
   return 1;
-}
-
-static std::string getProjectRoot() {
-	std::filesystem::path exePath = std::filesystem::canonical("/proc/self/exe");
-	return exePath.parent_path().parent_path().string().append("/");
-}
-
-static json getConfig(const std::string& userConfigPath) {
-	std::vector<std::string> configPaths;
-	if (userConfigPath != "") configPaths.push_back(userConfigPath);
-	configPaths.push_back("/etc/matrix-dashboard/config.json");
-	configPaths.push_back(getProjectRoot().append("config/config.json"));
-
-	std::ifstream configStream;
-	for (auto configPath : configPaths) {
-		configStream.open(configPath);
-		if (configStream.good()) {
-			return json::parse(configStream);
-		}
-	}
-
-	throw std::runtime_error("Config file not found");
 }
 
 volatile bool interrupt_received = false;
@@ -69,27 +45,11 @@ int main(int argc, char *argv[]){
 		}
 	}
 
-	json config = getConfig(userConfigPath);
-	json matrixConfig = config.at("matrix");
-
-	RGBMatrix::Options matrixOptions;
 	rgb_matrix::RuntimeOptions runtimeOptions;
+	if (dryrun) runtimeOptions.do_gpio_init = false;
 
-	if (matrixConfig.contains("size")) {
-		matrixOptions.rows = matrixConfig.at("size").at("rows").get<int>();
-		matrixOptions.cols = matrixConfig.at("size").at("cols").get<int>();
-	}
-	if (matrixConfig.contains("brightness")) {
-		matrixOptions.brightness = matrixConfig.at("brightness").get<int>();
-	}
-	if (matrixConfig.contains("limit_refresh_rate_hz")) {
-		matrixOptions.limit_refresh_rate_hz = matrixConfig.at("limit_refresh_rate_hz").get<int>();
-	}
-	std::string led_rgb_sequence;
-	if (matrixConfig.contains("led_rgb_sequence")) {
-		led_rgb_sequence = matrixConfig.at("led_rgb_sequence").get<std::string>();
-		matrixOptions.led_rgb_sequence = led_rgb_sequence.c_str();
-	}
+	json globalConfig = Config::getConfig(userConfigPath);
+	RGBMatrix::Options matrixOptions = Config::getMatrixOptions(globalConfig);
 
 	if (!rgb_matrix::ParseOptionsFromFlags(&argc, &argv,
 				&matrixOptions, &runtimeOptions)) {
@@ -97,14 +57,14 @@ int main(int argc, char *argv[]){
 	}
 
 	Font font;
-	std::string fontPath = getProjectRoot()
-			.append("rpi-rgb-led-matrix/fonts/")
-			.append((matrixConfig.at("font").get<std::string>()));
+	std::string fontPath = Config::getProjectRoot()
+			.append("fonts/")
+			.append((globalConfig.at("matrix").at("font").get<std::string>()));
 	if (!font.LoadFont(fontPath.c_str())) {
 		throw std::runtime_error("Could not load font");
 	}
 
-	auto blocks = Block::createBlocksFromJson(config.at("blocks"), font);
+	auto blocks = Block::createBlocksFromJson(globalConfig.at("blocks"), font);
 
 	if (dryrun) {
 		for (Block& block : blocks) block.update();
