@@ -1,11 +1,13 @@
 # LED Matrix Dashboard
 
+A configurable system for displaying real-time data on an LED matrix.
+
 ## Prerequisites
 
 To run this project, you will need:
 
 - A Raspberry Pi
-- An RGB LED matrix panel of size 32x64
+- An RGB LED Matrix Panel
 
 The panel needs to be connected to the Pi GPIOs according to [this schema](https://github.com/hzeller/rpi-rgb-led-matrix/blob/a3eea997a9254b83ab2de97ae80d83588f696387/wiring.md#connections-per-chain).
 
