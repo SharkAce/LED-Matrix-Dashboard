@@ -84,3 +84,4 @@ uninstall: check-root
 
 clean:
 	rm -f $(OBJECTS) $(DEPENDS) $(EXEC_REL) $(PCH_FILE)
+	$(MAKE) clean -C $(RGB_LIBDIR)
