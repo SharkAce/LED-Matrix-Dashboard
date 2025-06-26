@@ -1,7 +1,7 @@
 #include "pch.hpp"
 #include "Block.hpp"
 
-Block::Block(Block::Config&& config) 
+Block::Block(Block::Settings&& config) 
 	: font(config.font),
 	textProvider(std::move(config.textProvider)),
 	color(config.color),
@@ -38,7 +38,7 @@ std::vector<Block> Block::createBlocksFromJson(const nlohmann::json& j, rgb_matr
 			}
 		}
 
-		Block::Config config = {
+		Block::Settings config = {
 			.textProvider = std::move(textProvider),
 			.font = font,
 			.color = color,

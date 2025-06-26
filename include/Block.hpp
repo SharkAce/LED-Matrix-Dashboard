@@ -16,7 +16,7 @@ public:
 		BottomRight
 	};
 
-	struct Config {
+	struct Settings {
 		std::unique_ptr<TextProvider::Base> textProvider;
 		rgb_matrix::Font& font;
 		rgb_matrix::Color color;
@@ -26,7 +26,7 @@ public:
 		int relativeY;
 	};
 
-	Block(Config&& config);
+	Block(Settings&& config);
 	static std::vector<Block> createBlocksFromJson(const nlohmann::json& config, rgb_matrix::Font& font);
 	void draw(rgb_matrix::FrameCanvas* matrix);
 	void update();
