@@ -39,7 +39,7 @@ rgb_matrix::RGBMatrix::Options getMatrixOptions(const nlohmann::json& globalConf
 	if (matrixConfig.contains("limit_refresh_rate_hz")) {
 		matrixOptions.limit_refresh_rate_hz = matrixConfig.at("limit_refresh_rate_hz").get<int>();
 	}
-	std::string led_rgb_sequence;
+	static std::string led_rgb_sequence;
 	if (matrixConfig.contains("led_rgb_sequence")) {
 		led_rgb_sequence = matrixConfig.at("led_rgb_sequence").get<std::string>();
 		matrixOptions.led_rgb_sequence = led_rgb_sequence.c_str();
